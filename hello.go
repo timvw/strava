@@ -39,13 +39,18 @@ func main() {
 		return
 	}
 
+	publicHost, ok := os.LookupEnv("PUBLIC_HOST")
+	if !ok {
+		publicHost = fmt.Sprintf("http://localhost:%v", port)
+	}
+
 	requestTokenCallbackPath := "/callback"
-	requestTokenUrlCallbackUrl := fmt.Sprintf("http://localhost:%d%v", port, requestTokenCallbackPath)
+	requestTokenUrlCallbackUrl := fmt.Sprintf("%v%v", publicHost, requestTokenCallbackPath)
 
 	http.HandleFunc(requestTokenCallbackPath, makeRequestTokenCallbackHandler(clientId, clientSecret))
 	http.HandleFunc("/", makeIndexHandler(clientId, requestTokenUrlCallbackUrl))
 
-	fmt.Printf("Visit http://localhost:%d/ to view the demo\n", port)
+	fmt.Printf("Visit %v/ to view the demo\n", publicHost)
 	fmt.Printf("ctrl-c to exit")
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
