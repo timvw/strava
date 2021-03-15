@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strava-export
+  labels:
+    app: strava-export
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: strava-export
+  template:
+    metadata:
+      labels:
+        app: strava-export
+    spec:
+      containers:
+      - name: strava-export
+        image: registry.home.timvw.be/strava-export:0.1
+        ports:
+        - containerPort: 9000
+        imagePullPolicy: "Always"
+        env:
+        - name: strava-export_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: strava
+              key: strava-export_CLIENT_ID
+        - name: strava-export_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: strava
+              key: strava-export_CLIENT_SECRET
+        - name: PUBLIC_HOST
+          value: https://strava-export.home.timvw.be
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: strava-export
+  labels:
+    app: strava-export  
+spec:
+  selector:
+    app: strava-export
+  ports:
+    - port: 9000
+      targetPort: 9000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: strava-export
+  labels:
+    app: strava-export  
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - strava-export.home.timvw.be
+    secretName: strava-export-home-tls-secret
+  rules:
+  - host: strava-export.home.timvw.be
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: strava-export
+            port:
+              number: 9000
