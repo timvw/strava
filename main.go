@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -47,12 +48,19 @@ func main() {
 	requestTokenCallbackPath := "/callback"
 	requestTokenUrlCallbackUrl := fmt.Sprintf("%v%v", publicHost, requestTokenCallbackPath)
 
-	http.HandleFunc(requestTokenCallbackPath, makeRequestTokenCallbackHandler(clientId, clientSecret))
-	http.HandleFunc("/", makeIndexHandler(clientId, requestTokenUrlCallbackUrl))
+	http.HandleFunc(requestTokenCallbackPath, logged(makeRequestTokenCallbackHandler(clientId, clientSecret)))
+	http.HandleFunc("/", logged(makeIndexHandler(clientId, requestTokenUrlCallbackUrl)))
 
 	fmt.Printf("Visit %v/ to view the demo\n", publicHost)
-	fmt.Printf("ctrl-c to exit")
+	fmt.Printf("ctrl-c to exit\n")
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+}
+
+func logged(h func(http.ResponseWriter,*http.Request))  http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.RemoteAddr, r.Method, r.URL)
+		h(w, r)
+	}
 }
 
 func makeIndexHandler(clientId int, requestTokenCallbackUrl string) http.HandlerFunc {
