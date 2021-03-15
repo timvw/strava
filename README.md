@@ -1,10 +1,4 @@
-```bash
-brew tap go-swagger/go-swagger
-brew install go-swagger
+# Strava export
 
-swagger generate client -f https://developers.strava.com/swagger/swagger.json -c strava --skip-validation
-go get -u -f ./...
+Simple http server that allows the user to download her activities as CSV
 
-go build ./...
-go run github.com/timvw/strava
-```
