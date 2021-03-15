@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: strava
-        image: registry.home.timvw.be/strava:0.1
+        image: timvw/strava:latest
         ports:
         - containerPort: 9000
         imagePullPolicy: "Always"
