@@ -32,7 +32,7 @@ spec:
               name: strava
               key: STRAVA_CLIENT_SECRET
         - name: PUBLIC_HOST
-          value: https://strava.home.timvw.be
+          value: https://strava.apps.timvw.be
 ---
 apiVersion: v1
 kind: Service
@@ -58,10 +58,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - strava.home.timvw.be
-    secretName: strava-home-tls-secret
+    - strava.apps.timvw.be
+    secretName: strava-apps-tls-secret
   rules:
-  - host: strava.home.timvw.be
+  - host: strava.apps.timvw.be
     http:
       paths:
       - path: /
