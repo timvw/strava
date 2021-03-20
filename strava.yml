@@ -52,7 +52,6 @@ metadata:
 spec:
   selector:
     app: strava
-    namespace: strava
   ports:
     - port: 9000
       targetPort: 9000
